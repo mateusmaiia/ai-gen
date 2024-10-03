@@ -2,6 +2,7 @@
 
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
+import { ModeToggle } from './theme-toggle'
 
 
 export default function TopNav() {
@@ -20,6 +21,9 @@ export default function TopNav() {
             <SignedIn>
                 <UserButton />
             </SignedIn>
+            <div>
+                <ModeToggle />
+            </div>
         </div>
     </nav>
   )
