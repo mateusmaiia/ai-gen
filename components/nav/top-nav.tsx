@@ -10,7 +10,7 @@ export default function TopNav() {
     console.log({isSignedIn, user})
 
     return (
-    <nav className='flex justify-between items-center p-2 shadows'>
+    <nav className='flex justify-between items-center p-2 shadow'>
         <Link href="/">AI</Link>
         <div className='flex items-center'>
             {isSignedIn && <Link href="/dashboard" className='mr-2'>{`${user.fullName}'s Dashboard`}</Link>}
