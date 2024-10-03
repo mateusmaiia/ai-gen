@@ -1,6 +1,7 @@
 'use client';
 
 import { LayoutDashboard, FileClock, WalletCards, Settings } from 'lucide-react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function SideNav() {
@@ -33,10 +34,19 @@ export default function SideNav() {
   return (
     <div className='h-screen p-5 shadow-sm border'>
       {menu.map((item, index) => (
-        <div key={index} className='flex m-2 mr-4 p-2 hover:bg-primary hover:text-white rounded-lg cursor-pointer'>
+        <div 
+          key={index} 
+          className={`${
+            path === item.path 
+            ? "bg-primary text-white" 
+            : "hover:bg-primary hover:text-white"
+          } flex m-2 mr-4 p-2 rounded-lg cursor-pointer`}
+        >
+          <Link href={item.path}>
             <div className='flex'>
                 <item.icon></item.icon> <span className='ml-2'>{item.name}</span>
             </div>
+          </Link>
         </div>
       ))}
     </div>
