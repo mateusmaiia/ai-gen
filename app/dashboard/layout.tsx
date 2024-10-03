@@ -8,9 +8,6 @@ export default function DashboardLayout({children}: Readonly<{children: React.Re
             <SideNav />
         </div>
         <div className='col-span-3'>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore beatae eveniet repudiandae ab atque architecto sunt, exercitationem laboriosam vel, non nesciunt eius voluptatum, ea dolorum ex! Explicabo illum aut voluptatem?
-            </p>
             {children}
         </div>
     </div>
