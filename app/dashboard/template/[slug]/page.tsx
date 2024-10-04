@@ -1,12 +1,15 @@
 'use client';
 
-import React from 'react'
+import React, { useState } from 'react'
 // import { ArrowLeft } from 'lucide-react';
 import template from '@/utils/template';
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { runAi } from '@/actions/ai'
+import { Loader2Icon } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 
 export interface Template{
   name: string;
@@ -27,23 +30,24 @@ export interface Form {
 }
 
 export default function Page({params}: {params: {slug: string}}) {
-  
+  const [query, setQuery] = useState("")
+  const [content, setContent] = useState("")
+  const [loading, setLoading] = useState(false)
+
   const t = template.find((item) => item.slug === params.slug) as Template
 
-  const handleSubmit = (e:React.FormEvent<HTMLFormElement>) =>{
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault()
+    setLoading(true)
 
-    console.log("submitted")
-  }
-
-  const handleChange = (
-    e: 
-      | React.ChangeEvent<HTMLInputElement> 
-      | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-      e.preventDefault()
-      console.log(e.target.value)
-    
+    try {
+      const data = await runAi(t.aiPrompt + query)
+      setContent(data)
+    } catch (error) {
+      setContent("An error accurred. Please try again.")
+    }finally{
+      setLoading(false)
+    }
   }
 
   return (
@@ -69,20 +73,28 @@ export default function Page({params}: {params: {slug: string}}) {
                 <Input
                   name={item.name}
                   required={item.required}
-                  onChange={handleChange}
+                  onChange={e => setQuery(e.target.value)}
                 />
               ): (
                 <Textarea 
                   name={item.name}
                   required={item.required}
-                  onChange={handleChange}
+                  onChange={e => setQuery(e.target.value)}
                 />
               )}
             </div>
           ))}
 
-          <Button type='submit' className='w-full py-6'>Generate Content</Button>
+          <Button type='submit' className='w-full py-6' disabled={loading}>
+            {loading ? <Loader2Icon className='animate-spin mr-2' /> : "Generate Content"}
+          </Button>
         </form>
+      </div>
+
+      <div className="col-span-2">
+        <ReactMarkdown>
+          {content}
+        </ReactMarkdown>
       </div>
     </div>
   )
