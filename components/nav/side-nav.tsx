@@ -38,8 +38,8 @@ export default function SideNav() {
           key={index} 
           className={`${
             path === item.path 
-            ? "bg-primary text-white dark:text-black " 
-            : "hover:bg-primary hover:text-white dark:hover:bg-white dark:hover:text-black"
+            ? "border-primary text-primary " 
+            : "hover:border-primary hover:text-primary"
           } flex m-2 mr-2 p-2 rounded-lg  cursor-pointer border`}
         >
           <div className='flex justify-center items-center md:justify-start w-full'>

@@ -15,10 +15,10 @@ export default function Page() {
   return (
     <div>
       <div className='p-10 mx-5 mb-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center gap-2'>
-        <h1 className='text-xl'>What would you like create today?</h1>
+        <h1 className='text-xl'>What would you like to create today?</h1>
 
         <div className='w-full flex justify-center'>
-          <div className='flex gap-2 items-center justify-center p-2 border border-gray-300 dark:border-gray-700 shadow-sm rouded-lg w-72'>
+          <div className='flex gap-2 items-center justify-center p-2 border border-gray-300 dark:border-gray-700 shadow-lg rouded-medium bg-transparent my-5 w-[50%]'>
             <Search className='text-primary'/>
             <input 
               type='text'
