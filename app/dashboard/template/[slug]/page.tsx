@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 // import { ArrowLeft } from 'lucide-react';
 import template from '@/utils/template';
 import { Input } from '@/components/ui/input'
@@ -10,6 +10,10 @@ import { Button } from '@/components/ui/button'
 import { runAi } from '@/actions/ai'
 import { Loader2Icon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+
+import '@toast-ui/editor/dist/toastui-editor.css';
+
+import { Editor } from '@toast-ui/react-editor';
 
 export interface Template{
   name: string;
@@ -33,6 +37,15 @@ export default function Page({params}: {params: {slug: string}}) {
   const [query, setQuery] = useState("")
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const editorRef = useRef(null)
+
+  useEffect(() => {
+    if(content){
+      const editorInstance = editorRef.current?.getInstance()
+      editorInstance.setMarkdown(content)
+    }
+  }, [content])
 
   const t = template.find((item) => item.slug === params.slug) as Template
 
@@ -92,9 +105,15 @@ export default function Page({params}: {params: {slug: string}}) {
       </div>
 
       <div className="col-span-2">
-        <ReactMarkdown>
-          {content}
-        </ReactMarkdown>
+          <Editor 
+            ref={editorRef}
+            initValue={"Generated content will appear here."}
+            previewStyle="vertical"
+            height="600px"
+            initialValue="wysiwyg"
+            useCommandShortcut={true}
+            // onChange={() => setContent(editorRef.current?.getInstance().getMarkdown())}
+          />
       </div>
     </div>
   )
