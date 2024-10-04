@@ -1,9 +1,12 @@
+'use client';
+
 import React from 'react'
 // import { ArrowLeft } from 'lucide-react';
 import template from '@/utils/template';
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
 
 export interface Template{
   name: string;
@@ -27,6 +30,22 @@ export default function Page({params}: {params: {slug: string}}) {
   
   const t = template.find((item) => item.slug === params.slug) as Template
 
+  const handleSubmit = (e:React.FormEvent<HTMLFormElement>) =>{
+    e.preventDefault()
+
+    console.log("submitted")
+  }
+
+  const handleChange = (
+    e: 
+      | React.ChangeEvent<HTMLInputElement> 
+      | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+      e.preventDefault()
+      console.log(e.target.value)
+    
+  }
+
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 gap-5 px-5 '>
       <div className='col-span-1 bg-slate-100 dark:bg-slate-900 rounded-md border p-5'>
@@ -41,7 +60,7 @@ export default function Page({params}: {params: {slug: string}}) {
           <p className='text-gray-500'>{t.desc}</p>
         </div>
 
-        <form className='mt-6'>
+        <form className='mt-6' onSubmit={handleSubmit}>
           {t.form.map((item) => (
             <div key={item.name} className='mr-2 flex flex-col gap-2 mb-7'>
               <label  className='font-bold pb-5'>{item.label}</label>
@@ -50,15 +69,19 @@ export default function Page({params}: {params: {slug: string}}) {
                 <Input
                   name={item.name}
                   required={item.required}
+                  onChange={handleChange}
                 />
               ): (
                 <Textarea 
                   name={item.name}
                   required={item.required}
+                  onChange={handleChange}
                 />
               )}
             </div>
           ))}
+
+          <Button type='submit' className='w-full py-6'>Generate Content</Button>
         </form>
       </div>
     </div>
