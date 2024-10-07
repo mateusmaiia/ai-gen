@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { runAi } from '@/actions/ai'
+import { runAi, saveQuery } from '@/actions/ai'
 import { Loader2Icon, ArrowLeft, Copy } from 'lucide-react'
 
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -15,6 +15,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { useUser } from '@clerk/nextjs'
 
 export interface Template{
   name: string;
@@ -38,6 +39,9 @@ export default function Page({params}: {params: {slug: string}}) {
   const [query, setQuery] = useState("")
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
+  const {user} = useUser()
+
+  const email = user?.primaryEmailAddress?.emailAddress || ""
 
   const editorRef = useRef(null)
 
@@ -57,9 +61,13 @@ export default function Page({params}: {params: {slug: string}}) {
     try {
       const data = await runAi(t.aiPrompt + query)
       setContent(data)
+      //save to db
+      await saveQuery(t, email, query, data )
     } catch (error) {
+      console.log("handleSubmit error: ", error)
       setContent("An error accurred. Please try again.")
     }finally{
+      console.log("content finally: ",content)
       setLoading(false)
     }
   }
