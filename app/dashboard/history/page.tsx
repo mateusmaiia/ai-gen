@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Loader2Icon } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { getQueries } from '@/actions/ai';
+import { Button } from '@/components/ui/button';
 
 export default function History() {
 
@@ -26,11 +27,27 @@ export default function History() {
     if(page === 1 && email) fetchQueries()
   }, [page, email])
 
+  useEffect(() => {
+    if(page > 1 && email) loadMore()
+  }, [page])
+
   async function fetchQueries(){
     setLaoding(true)
     try {
       const res = await (getQueries(email, page, perPage)) as QueryResponse
       setQueries(res.queries)
+      setTotalPages(res.totalPages)
+    } catch (error) {
+      console.log("fetchQueries error, ",error)
+    }finally {
+      setLaoding(false)
+    }
+  }
+  async function loadMore(){
+    setLaoding(true)
+    try {
+      const res = await (getQueries(email, page, perPage)) as QueryResponse
+      setQueries([...queries, ...res.queries])
       setTotalPages(res.totalPages)
     } catch (error) {
       console.log("fetchQueries error, ",error)
