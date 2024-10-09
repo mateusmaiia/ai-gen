@@ -12,7 +12,7 @@ export default function History() {
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(2)
-  const [laoding, setLaoding] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   interface QueryResponse {
     queries: [],
@@ -32,7 +32,7 @@ export default function History() {
   }, [page])
 
   async function fetchQueries(){
-    setLaoding(true)
+    setLoading(true)
     try {
       const res = await (getQueries(email, page, perPage)) as QueryResponse
       setQueries(res.queries)
@@ -40,11 +40,11 @@ export default function History() {
     } catch (error) {
       console.log("fetchQueries error, ",error)
     }finally {
-      setLaoding(false)
+      setLoading(false)
     }
   }
   async function loadMore(){
-    setLaoding(true)
+    setLoading(true)
     try {
       const res = await (getQueries(email, page, perPage)) as QueryResponse
       setQueries([...queries, ...res.queries])
@@ -52,7 +52,7 @@ export default function History() {
     } catch (error) {
       console.log("fetchQueries error, ",error)
     }finally {
-      setLaoding(false)
+      setLoading(false)
     }
   }
 
@@ -72,6 +72,14 @@ export default function History() {
         {/* {JSON.stringify(queries, null, 4)} */}
         {queries.length}
       </pre>
+
+      <div className="text-center my-5">
+        {page < totalPages && (
+          <Button onClick={() => setPage(prev => prev + 1)} disabled={loading}>
+            {loading ? <Loader2Icon className='animate-spin mx-2'/> : "Load More"}
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
