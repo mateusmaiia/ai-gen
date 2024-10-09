@@ -16,24 +16,7 @@ import { Editor } from '@toast-ui/react-editor';
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useUser } from '@clerk/nextjs'
-
-export interface Template{
-  name: string;
-  slug: string;
-  icon: string;
-  desc: string;
-  category: string;
-  aiPrompt: string;
-  form: Form[];
-}
-
-export interface Form {
-  label: string;
-  field: string;
-  name: string;
-  required: boolean;
-  
-}
+import { Template } from '@/utils/types';
 
 export default function Page({params}: {params: {slug: string}}) {
   const [query, setQuery] = useState("")
