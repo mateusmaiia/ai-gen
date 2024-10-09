@@ -5,6 +5,7 @@ import { Loader2Icon } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { getQueries } from '@/actions/ai';
 import { Button } from '@/components/ui/button';
+import QueryTable from '@/components/table/query-table';
 
 export default function History() {
 
@@ -65,13 +66,14 @@ export default function History() {
     )
   }
   return (
-    <div className='p-10 my-5 mx-5 mb-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center gap-2'>
-      <h1 className='text-xl'>History</h1>
-      <p className='text-sm text-gray-500'>Your previous search history</p>
-      <pre>
-        {/* {JSON.stringify(queries, null, 4)} */}
-        {queries.length}
-      </pre>
+    <div>
+      <div className='p-10 my-5 mx-5 mb-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center gap-2'>
+        <h1 className='text-xl'>History</h1>
+        <p className='text-sm text-gray-500'>Your previous search history</p>
+      </div>
+      <div className='p-5 rounded-lg flex flex-col justify-center'>
+        <QueryTable data={queries}/>
+      </div>
 
       <div className="text-center my-5">
         {page < totalPages && (
