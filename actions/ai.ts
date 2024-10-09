@@ -3,6 +3,7 @@
 import db from '@/utils/db'
 import Query from '@/models/query'
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ok } from 'assert';
 
 const apiKey = process.env.GOOGLE_GEN_AI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -53,6 +54,30 @@ export async function saveQuery(template: object, email: string, query: string, 
     console.log("saveQuery error: ",error)
     return{
       ok: false,
+    }
+  }
+}
+
+export async function getQueries(email: string, page: number, pageSize: number){
+  try {
+    await db()
+
+    const skip = (page - 1) * pageSize
+    const totalQueries = await Query.countDocuments({email})
+
+    const queries = await Query.find({email})
+     .sort({ createdAt: -1 })
+     .skip(skip)
+     .limit(pageSize)
+    
+     return {
+      queries, 
+      totalPages: Math.ceil(totalQueries / pageSize)
+     }
+  } catch (error) {
+    console.log("getQueries error: ",error)
+    return {
+      ok: false
     }
   }
 }
