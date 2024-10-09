@@ -3,7 +3,6 @@
 import db from '@/utils/db'
 import Query from '@/models/query'
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ok } from 'assert';
 
 const apiKey = process.env.GOOGLE_GEN_AI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
