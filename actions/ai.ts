@@ -3,6 +3,7 @@
 import db from '@/utils/db'
 import Query from '@/models/query'
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { WholeWordIcon } from 'lucide-react';
 
 const apiKey = process.env.GOOGLE_GEN_AI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -78,5 +79,48 @@ export async function getQueries(email: string, page: number, pageSize: number){
     return {
       ok: false
     }
+  }
+}
+
+export async function usageCount(email: string){
+  try {
+    await db()
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
+
+    const result = await Query.aggregate([
+        {
+          $match: {
+          email: email,
+          $expr: {
+            $and: [
+              {$eq: [{$year: "$createdAt"}, currentYear ]},
+              {$eq: [{$month: "$createdAt"}, currentMonth ]}
+            ]
+          }
+        }
+      },
+      {
+        $project:{
+          wordCount:{
+            $size: {
+              $split: [{$trim: {input: "$content"}}, " "],
+            }  
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalWords: { $sum: "$wordCount" }
+        }
+      }
+    ])
+
+    return result.length > 0 ? result[0].totalWords : 0
+  } catch (error) {
+    console.log("usageCount erro: ", error)
   }
 }
