@@ -13,5 +13,4 @@ export interface Form {
   field: string;
   name: string;
   required: boolean;
-  
 }
