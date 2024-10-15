@@ -17,6 +17,7 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useUser } from '@clerk/nextjs'
 import { Template } from '@/utils/types';
+import { useUsage } from '@/context/usage';
 
 export default function Page({params}: {params: {slug: string}}) {
   const [query, setQuery] = useState("")
@@ -26,6 +27,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
   const email = user?.primaryEmailAddress?.emailAddress || ""
 
+  const { fetchUsage } = useUsage()
   const editorRef = useRef(null)
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function Page({params}: {params: {slug: string}}) {
       setContent(data)
       //save to db
       await saveQuery(t, email, query, data )
+      fetchUsage() 
     } catch (error) {
       console.log("handleSubmit error: ", error)
       setContent("An error accurred. Please try again.")
