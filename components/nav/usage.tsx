@@ -3,6 +3,7 @@
 import { useUsage } from "@/context/usage";
 import React from "react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function Usage(){
   const {count} = useUsage()
@@ -23,7 +24,9 @@ export default function Usage(){
           {count} / {credits} credit used
         </h2>
 
-        <Button className="w-full my-3" variant="secondary">Upgrade</Button>
+        <Link href="/membership">
+          <Button className="w-full my-3" variant="secondary">Upgrade</Button>
+        </Link>
       </div>
     </div>
   )
