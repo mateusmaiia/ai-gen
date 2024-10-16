@@ -4,6 +4,7 @@ import { LayoutDashboard, FileClock, WalletCards, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Usage from './usage';
+import SignUpModal from '../modal/sign-up-modal';
 
 export default function SideNav() {
     const path = usePathname()
@@ -47,7 +48,9 @@ export default function SideNav() {
               <div className='flex justify-center items-center md:justify-start w-full'>
                 <Link href={item.path} className='flex'>
                     <item.icon>{""}
-                    </item.icon> <span className='ml-2 hidden md:inline'>{item.name}</span>
+                    </item.icon> 
+                    {/* use hidden clss to to show only icon in small screen */}
+                    <span className='ml-2 md:inline'>{item.name}</span>
                 </Link>
               </div>
             </li>
@@ -55,6 +58,7 @@ export default function SideNav() {
       </ul>
       <div className='pb-20 mt-auto'>
         <Usage />
+        <SignUpModal />
       </div>
     </div>
   )
