@@ -4,11 +4,36 @@ import React from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
 import Image from 'next/image'
 import { Button } from '../ui/button';
+import { CreateCheckoutSession } from '@/actions/stripe';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast'
+
 export default function PlanCard({name, image}: {name: string, image: string}) {
-  const {isSignedIn, isLoaded} = useUser( )
+  const {isSignedIn, isLoaded} = useUser()
+  const router = useRouter()
 
-  const handleCheckout = () => {
-
+  const handleCheckout = async () => {
+    if(name == "Free"){
+      router.push('/dashboard')
+      return
+    }else{
+      try {
+        const response = await CreateCheckoutSession()
+        const {url, error} = response
+  
+        if(error){
+          toast.error(error);
+          return
+        }
+  
+        if(url){
+          window.location.href = url 
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error("An unexpected error ocurred. Please try again later.")
+      }
+    }
   }
   return (
     <div className='max-w-sm rounded overflow-hidden shadow-lg m-4 border'>
@@ -41,9 +66,7 @@ export default function PlanCard({name, image}: {name: string, image: string}) {
 
       {!isLoaded ? "" : !isSignedIn ? (
         <div className="px-5 pb-10">
-          <Button>
             <SignInButton />
-          </Button>
         </div>
       ) : (
         <div className='px-5 pb-10'>

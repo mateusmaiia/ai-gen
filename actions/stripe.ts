@@ -1,3 +1,5 @@
+'use server';
+
 import Transaction from '@/models/transactions'
 import db from '@/utils/db'
 import { currentUser } from '@clerk/nextjs/server'
