@@ -1,6 +1,7 @@
 import Transaction from '@/models/transactions'
 import db from '@/utils/db'
 import { currentUser } from '@clerk/nextjs/server'
+import stripe from '@/utils/stripe'
 
 interface CheckoutSessionResponse {
     url?: string;
@@ -37,6 +38,23 @@ export async function CreateCheckoutSession():Promise<CheckoutSessionResponse>{
                 return ({error: 'You already have an active subscription'})
             }
         }
+
+        //create a new checkout session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price: process.env.STRIPE_MONTHLY_PRICE_ID,
+                    quantity: 1
+                },
+            ],
+            mode:'subscription',
+            customer_email: customerEmail,
+            success_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
+            cancel_url: `${process.env.NEXT_PUBLIC_URL}`
+        });
+
+        return { url: session.url ?? undefined}
     } catch (error) {
         console.log(error)
         return {error: "Error craeting stripe checkout session"}; 
