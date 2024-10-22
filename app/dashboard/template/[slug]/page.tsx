@@ -56,7 +56,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   const email = user?.primaryEmailAddress?.emailAddress || '';
 
-  const { fetchUsage } = useUsage();
+  const { fetchUsage, subscribed, count } = useUsage();
 
   const editor = useEditor({
     extensions: [
@@ -148,8 +148,17 @@ export default function Page({ params }: { params: { slug: string } }) {
               </div>
             ))}
 
-            <Button type="submit" className="w-full py-6" disabled={loading}>
-              {loading ? <Loader2Icon className="animate-spin mr-2" /> : 'Generate Content'}
+            <Button 
+              type="submit" 
+              className="w-full py-6" 
+              disabled={loading || (!subscribed && count >= Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE))} 
+            >
+              {loading && <Loader2Icon className="animate-spin mr-2" /> }
+              {subscribed || count < Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE) ? (
+                'Generate content'
+              ) : (
+                'Subscribe to generate content'
+              )}
             </Button>
           </form>
         </div>

@@ -3,15 +3,17 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { usageCount } from "@/actions/ai";
 import { useUser } from "@clerk/nextjs";
+import { checkUserSubscrioption } from "@/actions/stripe";
 
  interface UsageContextType{
   count: number;
   fetchUsage: () => void;
   openModal: boolean;
   setOpenModal: (open: boolean) => void;
+  subscribed: boolean;
  }
 
- const UsageContext = createContext(null);
+ const UsageContext = createContext<UsageContextType | null>(null);
 
  export const UsageProvider = ({
     children,
@@ -19,19 +21,22 @@ import { useUser } from "@clerk/nextjs";
     children: React.ReactNode;
   }>) => {
   //state
-  const [ count, setCount ] = useState<UsageContextType | null>(null)
+  const [ count, setCount ] = useState(0)
   const [openModal, setOpenModal] = useState(false)  
+  const [subscribed , setSubscribed] = useState(false) 
   //hooks
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress || ""
-
   //effects
   useEffect(() => {
-    if(email) fetchUsage()
+    if(email) {
+      fetchUsage()
+      fetchSubscription()
+    }
   }, [email])
 
   useEffect(() => {
-    if(count > 100) setOpenModal(true)
+    if(count > Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE)) setOpenModal(true)
   },[count])
 
   async function fetchUsage(){
@@ -39,8 +44,13 @@ import { useUser } from "@clerk/nextjs";
     console.log("fetchUsage, ",res)
     setCount(res)
   }
+
+  const fetchSubscription = async () => {
+    const response = checkUserSubscrioption()
+    setSubscribed(response.ok || false)
+  } 
   return (
-    <UsageContext.Provider value={{count, fetchUsage, openModal, setOpenModal}}>
+    <UsageContext.Provider value={{count, fetchUsage, openModal, setOpenModal, subscribed}}>
       {children}
     </UsageContext.Provider>
   )
