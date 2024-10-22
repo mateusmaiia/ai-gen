@@ -84,7 +84,7 @@ export default function PlanCard({name, image}: {name: string, image: string}) {
       ? "" 
       : !isSignedIn ? (
         <div className="px-5 pb-10">
-          <Button>
+          <Button asChild>
             <SignInButton />
           </Button>
         </div>
