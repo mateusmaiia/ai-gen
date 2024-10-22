@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { usageCount } from "@/actions/ai";
 import { useUser } from "@clerk/nextjs";
-import { checkUserSubscrioption } from "@/actions/stripe";
+import { checkUserSubscription } from "@/actions/stripe";
 
  interface UsageContextType{
   count: number;
@@ -47,12 +47,12 @@ import { checkUserSubscrioption } from "@/actions/stripe";
 
   async function fetchUsage(){
     const res = await usageCount(email)
-    console.log("fetchUsage, ",res)
+    // console.log("fetchUsage, ",res)
     setCount(res)
   }
 
   const fetchSubscription = async () => {
-    const response = checkUserSubscrioption()
+    const response = await checkUserSubscription()
     setSubscribed(response.ok || false)
   } 
   return (

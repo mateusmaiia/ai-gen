@@ -63,14 +63,14 @@ export async function CreateCheckoutSession():Promise<CheckoutSessionResponse>{
     }
 }
 
-export async function checkUserSubscrioption(){
+export async function checkUserSubscription(){
   const user = await currentUser()
   const customerEmail = user?.emailAddresses[0]?.emailAddress
 
   try {
     const transaction = await Transaction.findOne({
       customerEmail,
-      stastus: "complete"
+      status: "complete"
     })
 
     if(transaction && transaction.subscriptionId) {
