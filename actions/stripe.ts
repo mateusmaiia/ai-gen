@@ -91,3 +91,25 @@ export async function checkUserSubscrioption(){
     return {message: "Error checking subscription"}
   }
 }
+
+export async function createCustomerPortalSession(){
+  const user = await currentUser()
+  const customerEmail = user?.emailAddresses[0]?.emailAddress
+
+  try {
+    const transaction = await Transaction.findOne({
+      customerEmail,
+    })
+
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: transaction.customerId,
+      return_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
+    })
+
+    return portalSession.url ?? `${process.env.NEXT_PUBLIC_URL}/dashboard`
+
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
