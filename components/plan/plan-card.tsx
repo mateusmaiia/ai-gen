@@ -1,14 +1,20 @@
 'use client';
 
-import React from 'react'
+import React, { useState } from 'react'
 import { SignInButton, useUser } from '@clerk/nextjs'
 import Image from 'next/image'
 import { Button } from '../ui/button';
 import { CreateCheckoutSession } from '@/actions/stripe';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast'
+import { Loader2Icon } from 'lucide-react';
 
 export default function PlanCard({name, image}: {name: string, image: string}) {
+
+  //state
+  const [loading, setLoading] = useState(false)
+
+  //hooks
   const {isSignedIn, isLoaded} = useUser()
   const router = useRouter()
 
@@ -17,6 +23,7 @@ export default function PlanCard({name, image}: {name: string, image: string}) {
       router.push('/dashboard')
       return
     }else{
+      setLoading(true)
       try {
         const response = await CreateCheckoutSession()
         const {url, error} = response
@@ -32,6 +39,8 @@ export default function PlanCard({name, image}: {name: string, image: string}) {
       } catch (error) {
         console.log(error)
         toast.error("An unexpected error ocurred. Please try again later.")
+      }finally{
+        setLoading(false)
       }
     }
   }
@@ -64,9 +73,20 @@ export default function PlanCard({name, image}: {name: string, image: string}) {
         </ul>
       </div>
 
-      {!isLoaded ? "" : !isSignedIn ? (
+      {loading ? (
+        <div className='px-5 pb-10'>
+          <Button disabled={loading}>
+            <Loader2Icon className='animate-spin mr-2'/> Processing
+          </Button>
+        </div>
+      ) :
+      !isLoaded 
+      ? "" 
+      : !isSignedIn ? (
         <div className="px-5 pb-10">
+          <Button>
             <SignInButton />
+          </Button>
         </div>
       ) : (
         <div className='px-5 pb-10'>
