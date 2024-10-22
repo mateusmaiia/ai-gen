@@ -62,3 +62,32 @@ export async function CreateCheckoutSession():Promise<CheckoutSessionResponse>{
         return {error: "Error craeting stripe checkout session"}; 
     }
 }
+
+export async function checkUserSubscrioption(){
+  const user = await currentUser()
+  const customerEmail = user?.emailAddresses[0]?.emailAddress
+
+  try {
+    const transaction = await Transaction.findOne({
+      customerEmail,
+      stastus: "complete"
+    })
+
+    if(transaction && transaction.subscriptionId) {
+      const subscription = await stripe.subscriptions.retrieve(transaction.subscriptionId)
+      
+      if(subscription.status === "active") {
+        return {
+          ok: true,
+        }
+      }else{
+        return{
+          ok: false
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error) 
+    return {message: "Error checking subscription"}
+  }
+}
