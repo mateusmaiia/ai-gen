@@ -36,8 +36,14 @@ import { checkUserSubscrioption } from "@/actions/stripe";
   }, [email])
 
   useEffect(() => {
-    if(count > Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE)) setOpenModal(true)
-  },[count])
+    if(
+      !subscribed && 
+      count > Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE)) {
+        setOpenModal(true)
+      }else{
+        setOpenModal(false)
+      }
+  },[count, subscribed])
 
   async function fetchUsage(){
     const res = await usageCount(email)
