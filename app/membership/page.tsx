@@ -10,7 +10,7 @@ export default function Membership() {
 
       <div className='flex flex-wrap justify-center'>
         <PlanCard name="Monthly" image="/monthly.png"/> 
-        <PlanCard name="Free" image="/freejpg.png"/> 
+        <PlanCard name="Free" image="/free.png"/> 
       </div>
     </div>
   )
