@@ -13,40 +13,9 @@ import toast from 'react-hot-toast';
 import { useUser } from '@clerk/nextjs';
 import { Template } from '@/utils/types';
 import { useUsage } from '@/context/usage';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-// Import TipTap components
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { Color } from '@tiptap/extension-color';
-import TextStyle from '@tiptap/extension-text-style';
-
-const MenuBar = ({ editor }: { editor: any }) => {
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-wrap gap-2 mb-4">
-      <button
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        disabled={!editor.can().chain().focus().toggleBold().run()}
-        className={`px-4 py-2 rounded-md transition-colors ${editor.isActive('bold') ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-      >
-        Bold
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        disabled={!editor.can().chain().focus().toggleItalic().run()}
-        className={`px-4 py-2 rounded-md transition-colors ${editor.isActive('italic') ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-      >
-        Italic
-      </button>
-      {/* Adicione outros botões conforme necessário */}
-    </div>
-  );
-};
+import MarkdownEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
+import { marked } from 'marked'; // Importação do marked
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [query, setQuery] = useState('');
@@ -55,28 +24,21 @@ export default function Page({ params }: { params: { slug: string } }) {
   const { user } = useUser();
 
   const email = user?.primaryEmailAddress?.emailAddress || '';
-
   const { fetchUsage, subscribed, count } = useUsage();
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Color.configure({ types: [TextStyle.name] }),
-      TextStyle,
-    ],
-    content: content || 'Generated content will appear here.',
-    onUpdate: ({ editor }) => {
-      setContent(editor.getHTML());
-    },
-  });
+  const t = template.find((item) => item.slug === params.slug) as Template | undefined;
 
-  useEffect(() => {
-    if (editor && content) {
-      editor.commands.setContent(content);
-    }
-  }, [content, editor]);
+  if (!t) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">Template not found. Please go back to the dashboard.</p>
+      </div>
+    );
+  }
 
-  const t = template.find((item) => item.slug === params.slug) as Template;
+  const handleEditorChange = ({ text }) => {
+    setContent(text); // Atualiza o conteúdo com o texto do editor
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -84,15 +46,13 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     try {
       const data = await runAi(t.aiPrompt + query);
-      setContent(data);
-      // Save to db
+      setContent(data); // Atualiza o conteúdo com a resposta da AI
       await saveQuery(t, email, query, data);
       fetchUsage();
     } catch (error) {
       console.log('handleSubmit error: ', error);
       setContent('An error occurred. Please try again.');
     } finally {
-      console.log('content finally: ', content);
       setLoading(false);
     }
   };
@@ -102,7 +62,8 @@ export default function Page({ params }: { params: { slug: string } }) {
       await navigator.clipboard.writeText(content);
       toast.success('Content copied to clipboard');
     } catch (error) {
-      console.log(error);
+      console.log('handleCopy error:', error);
+      toast.error('Failed to copy content.');
     }
   }
 
@@ -153,7 +114,7 @@ export default function Page({ params }: { params: { slug: string } }) {
               className="w-full py-6" 
               disabled={loading || (!subscribed && count >= Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE))} 
             >
-              {loading && <Loader2Icon className="animate-spin mr-2" /> }
+              {loading && <Loader2Icon className="animate-spin mr-2" />}
               {subscribed || count < Number(process.env.NEXT_PUBLIC_FREE_TIER_USAGE) ? (
                 'Generate content'
               ) : (
@@ -164,12 +125,16 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
 
         <div className="col-span-2">
-          <MenuBar editor={editor} />
-          <div className="prose prose-lg dark:prose-invert bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-700 rounded-md p-4 min-h-[300px] focus:outline-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose prose-lg dark:prose-invert">{content}</ReactMarkdown>
-          </div>
+          <MarkdownEditor
+            value={content}
+            style={{ height: '400px' }}
+            onChange={handleEditorChange}
+            renderHTML={(text) => (
+              <div dangerouslySetInnerHTML={{ __html: marked(text) }} /> // Usando o `marked` para renderizar HTML
+            )}
+          />
         </div>
       </div>
     </div>
   );
-} 
+}
