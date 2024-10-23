@@ -22,6 +22,12 @@ export default function TopNav() {
           <Link href="/membership">🔥 Join free or $9.99/month </Link>
         )}
 
+        <Link
+          href="/"
+        >
+          Gen AI
+        </Link>
+
         <div className='flex items-center'>
             {isSignedIn && (
               <Link href="/dashboard" className='mr-2'>
