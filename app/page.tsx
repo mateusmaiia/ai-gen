@@ -58,6 +58,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <footer className="py-4 text-center border-t-2">
+        <p className="text-sm text-gray-500">
+          &copy; {new Date().getFullYear()} AI Content Generator. All rights reserved.
+        </p>
+      </footer>
     </>
   );
 }
